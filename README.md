@@ -81,3 +81,7 @@ This implementation of the seam carving algorithm is single-threaded, which mean
 ## Credits
 
 This implementation of the seam carving algorithm is based on the original paper by Shai Avidan and Ariel Shamir - though it only does vertical seamcarving so far -, "Seam Carving for Content-Aware Image Resizing", which can be found here: <https://perso.crans.org/frenoy/matlab2012/seamcarving.pdf>.
+
+## Todo
+
+Add gaussian blur filter
