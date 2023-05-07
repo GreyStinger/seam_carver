@@ -1,4 +1,6 @@
-#include <math.h>
+#include <cmath>
+#include <vector>
+#include <iostream>
 
 #include <Filter.h>
 
@@ -108,4 +110,123 @@ namespace StronkImage
 
         return energyMap;
     }
+
+    void Filter::removeSeams(ImageData &sourceImage, ImageData &energyMap, int numSeams)
+    {
+        for (int seamCount = 0; seamCount < numSeams; ++seamCount)
+        {
+            std::vector<int> seam(sourceImage.getHeight());
+
+            for (unsigned int y = 0; y < sourceImage.getHeight(); ++y)
+            {
+                for (unsigned int x = 0; x < sourceImage.getWidth(); ++x)
+                {
+                    if (y == 0)
+                    {
+                        seam[y] = x;
+                    }
+                    else
+                    {
+                        int minIdx = seam[y - 1];
+                        int minEnergy = energyMap.getPixel(minIdx % sourceImage.getWidth(), y - 1).red;
+
+                        if (x > 0)
+                        {
+                            int leftEnergy = energyMap.getPixel(x - 1, y - 1).red;
+                            if (leftEnergy < minEnergy)
+                            {
+                                minEnergy = leftEnergy;
+                                minIdx = seam[y - 1] - 1;
+                            }
+                        }
+
+                        if (x < sourceImage.getWidth() - 1)
+                        {
+                            int rightEnergy = energyMap.getPixel(x + 1, y - 1).red;
+                            if (rightEnergy < minEnergy)
+                            {
+                                minIdx = seam[y - 1] + 1;
+                            }
+                        }
+
+                        seam[y] = minIdx + (x - minIdx % sourceImage.getWidth());
+                    }
+                }
+            }
+
+            ImageData newImage(sourceImage.getWidth() - 1, sourceImage.getHeight());
+
+            for (unsigned int y = 0; y < sourceImage.getHeight(); ++y)
+            {
+                for (unsigned int x = 0; x < sourceImage.getWidth(); ++x)
+                {
+                    if (x < static_cast<unsigned int>(seam[y]))
+                    {
+                        newImage.setPixel(x, y, sourceImage.getPixel(x, y));
+                    }
+                    else if (x > static_cast<unsigned int>(seam[y]))
+                    {
+                        newImage.setPixel(x - 1, y, sourceImage.getPixel(x, y));
+                    }
+                }
+            }
+
+            sourceImage = newImage;
+            energyMap = Filter::generateEnergyMap(sourceImage);
+        }
+    }
+
+    // Bad initialization
+    // void Filter::removeSeams(ImageData &sourceImage, ImageData &energyMap, int numSeams)
+    // {
+    //     for (int seamCount = 0; seamCount < numSeams; ++seamCount)
+    //     {
+    //         // Find the minimum cost seam in the energy map
+    //         std::vector<int> seam(sourceImage.getHeight());
+
+    //         // Initialize the first row of the seam with the first row of the energy map
+    //         for (unsigned int y = 0; y < sourceImage.getHeight(); ++y)
+    //         {
+    //             seam[y] = y * sourceImage.getWidth();
+    //             for (unsigned int x = 1; x < sourceImage.getWidth(); ++x)
+    //             {
+    //                 int currentIdx = y * sourceImage.getWidth() + x;
+    //                 int currentEnergy = energyMap.getPixel(x, y).red;
+
+    //                 if (y == 0)
+    //                 {
+    //                     seam[y] = currentIdx;
+    //                 }
+    //                 else
+    //                 {
+    //                     int minIdx = seam[y - 1] - sourceImage.getWidth();
+
+    //                     if (x > 0 && seam[y - 1] - sourceImage.getWidth() + 1 < energyMap.getPixel(x - 1, y - 1).red)
+    //                     {
+    //                         minIdx = seam[y - 1] - sourceImage.getWidth() + 1;
+    //                     }
+
+    //                     if (x < sourceImage.getWidth() - 1 && seam[y - 1] - sourceImage.getWidth() - 1 < energyMap.getPixel(x + 1, y - 1).red)
+    //                     {
+    //                         minIdx = seam[y - 1] - sourceImage.getWidth() - 1;
+    //                     }
+
+    //                     seam[y] = minIdx + sourceImage.getWidth();
+    //                 }
+    //             }
+    //         }
+
+    //         // Remove the seam from the source image
+    //         for (unsigned int y = 0; y < sourceImage.getHeight(); ++y)
+    //         {
+    //             for (unsigned int x = seam[y] % sourceImage.getWidth(); x < sourceImage.getWidth() - 1; ++x)
+    //             {
+    //                 sourceImage.setPixel(x, y, sourceImage.getPixel(x + 1, y));
+    //             }
+    //         }
+
+    //         // Update the source image width
+    //         sourceImage.resizeBuffer(sourceImage.getWidth() - 1, sourceImage.getHeight());
+    //     }
+    // } // Seems to only remove from the left side..
 }

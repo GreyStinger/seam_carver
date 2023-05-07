@@ -30,6 +30,28 @@ namespace StronkImage
 		// its resources, no additional resource cleanup is required in the destructor.
 	}
 
+	ImageData &ImageData::operator=(const ImageData &other)
+	{
+		if (this != &other)
+		{
+			width = other.width;
+			height = other.height;
+
+			if (rgbPixelData)
+			{
+				delete[] rgbPixelData;
+			}
+
+			rgbPixelData = new RGBPixelBuf[width * height];
+
+			for (unsigned int i = 0; i < width * height; ++i)
+			{
+				rgbPixelData[i] = other.rgbPixelData[i];
+			}
+		}
+		return *this;
+	}
+
 	void Image::loadFromFile(const std::string &imageSpec)
 	{
 		if (imageSpec.substr(imageSpec.find_last_of(".") + 1) == "jpg" || imageSpec.substr(imageSpec.find_last_of(".") + 1) == "jpeg")

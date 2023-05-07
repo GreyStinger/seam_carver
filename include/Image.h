@@ -33,15 +33,16 @@ namespace StronkImage
 		// Destructor
 		~ImageData();
 
-		// Change buffer size for new height and width
+		// Copy operator
+		ImageData &operator=(const ImageData &other);
+
+		// Change buffer size for new height and width and set new height and width
 		void resizeBuffer(int newWidth, int newHeight);
 
         // Getters and setters for width and height
         unsigned int getWidth() const { return width; }
-        void setWidth(unsigned int newWidth) { width = newWidth; }
 
         unsigned int getHeight() const { return height; }
-        void setHeight(unsigned int newHeight) { height = newHeight; }
 
 		// Get pixel at (x, y) position
 		RGBPixelBuf getPixel(int x, int y) const;

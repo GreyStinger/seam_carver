@@ -1,42 +1,51 @@
 #include <iostream>
 #include <string>
-
-#include <StronkImage.h>
+#include "StronkImage.h"
 
 using namespace StronkImage;
 
-int main(int argc, char *argv[])
+void stripImage(const std::string& inputImagePath, const std::string& outputImagePath, int numSeams)
 {
-    if (argc != 2)
+    // Load the input image
+    Image inputImage(inputImagePath);
+
+    // Generate a grayscale version of the image
+    ImageData grayscaleImage = inputImage.getRawImageData();
+    Filter::genGrayscaleData(grayscaleImage);
+
+    // Generate an energy map of the grayscale image
+    ImageData energyMap = Filter::generateEnergyMap(grayscaleImage);
+
+    // Remove the specified number of seams from the input image
+    Filter::removeSeams(inputImage.getRawImageData(), energyMap, numSeams);
+
+    // Save the modified image to the output path
+    inputImage.writeToFile(outputImagePath);
+}
+
+int main(int argc, char* argv[])
+{
+    if (argc != 4)
     {
-        std::cerr << "Usage: " << argv[0] << " <input_image>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <inputImagePath> <outputImagePath> <numSeams>" << std::endl;
         return 1;
     }
 
     std::string inputImagePath = argv[1];
-    std::string outputEnergyMap = "energy_map.png";
+    std::string outputImagePath = argv[2];
+    int numSeams = std::stoi(argv[3]);
 
     try
     {
-        // Load input image
-        StronkImage::Image inputImage(inputImagePath);
-
-        // Generate energy map
-        StronkImage::ImageData energyMap = StronkImage::Filter::generateEnergyMap(inputImage.getRawImageData());
-
-        // Write energy map to disk
-        StronkImage::Image energyMapImage;
-        energyMapImage.setRawImageData(energyMap);
-        energyMapImage.writeToFile(outputEnergyMap);
-        inputImage.writeToFile(inputImagePath + "1.png");
-
-        std::cout << "Successfully generated Sobel filter images and energy map." << std::endl;
+        stripImage(inputImagePath, outputImagePath, numSeams);
     }
-    catch (const std::runtime_error &e)
+    catch (const std::exception& e)
     {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }
+
+    std::cout << "Successfully removed " << numSeams << " seams from " << inputImagePath << " and saved the result to " << outputImagePath << std::endl;
 
     return 0;
 }

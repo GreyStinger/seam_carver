@@ -24,4 +24,6 @@ echo "All dependencies found. Running CMake to generate build files."
 mkdir build
 cd build
 
+mkdir test_images
+
 cmake ..
