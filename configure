@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Check if pkg-config is installed
+if ! command -v pkg-config > /dev/null; then
+    echo "Error: pkg-config not found. Please install pkg-config and try again."
+    exit 1
+fi
+
+# Check for libjpeg
+if ! pkg-config --exists libjpeg; then
+    echo "Error: libjpeg not found. Please install libjpeg-dev and try again."
+    exit 1
+fi
+
+# Check for libpng
+if ! pkg-config --exists libpng; then
+    echo "Error: libpng not found. Please install libpng-dev and try again."
+    exit 1
+fi
+
+# If all checks pass, run CMake to generate the build files
+echo "All dependencies found. Running CMake to generate build files."
+
+mkdir build
+cd build
+
+cmake ..
