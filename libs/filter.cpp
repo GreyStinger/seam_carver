@@ -1,7 +1,5 @@
 #include <cmath>
 #include <vector>
-#include <set>
-#include <limits>
 #include <iostream>
 
 #include <Filter.h>
@@ -177,75 +175,4 @@ namespace StronkImage
             energyMap = Filter::generateEnergyMap(sourceImage);
         }
     }
-
-    void Filter::colorSeams(ImageData &sourceImage, ImageData &energyMap, int numSeams)
-    {
-        for (int seamCount = 0; seamCount < numSeams; ++seamCount)
-        {
-            std::vector<int> seam(sourceImage.getHeight());
-
-            for (unsigned int y = 0; y < sourceImage.getHeight(); ++y)
-            {
-                int minIdx = -1;
-                int minEnergy = std::numeric_limits<int>::max();
-
-                for (unsigned int x = 0; x < sourceImage.getWidth(); ++x)
-                {
-                    if (y == 0)
-                    {
-                        int currentEnergy = energyMap.getPixel(x, y).red;
-                        if (currentEnergy < minEnergy)
-                        {
-                            minEnergy = currentEnergy;
-                            minIdx = x;
-                        }
-                    }
-                    else
-                    {
-                        int currentIdx = seam[y - 1] + (x - seam[y - 1] % sourceImage.getWidth());
-                        int currentEnergy = energyMap.getPixel(currentIdx % sourceImage.getWidth(), y).red;
-
-                        if (x > 0)
-                        {
-                            int leftEnergy = energyMap.getPixel(x - 1, y - 1).red;
-                            if (leftEnergy < currentEnergy)
-                            {
-                                currentEnergy = leftEnergy;
-                                currentIdx = seam[y - 1] - 1;
-                            }
-                        }
-
-                        if (x < sourceImage.getWidth() - 1)
-                        {
-                            int rightEnergy = energyMap.getPixel(x + 1, y - 1).red;
-                            if (rightEnergy < currentEnergy)
-                            {
-                                currentEnergy = rightEnergy;
-                                currentIdx = seam[y - 1] + 1;
-                            }
-                        }
-
-                        if (currentEnergy < minEnergy)
-                        {
-                            minEnergy = currentEnergy;
-                            minIdx = currentIdx;
-                        }
-                    }
-                }
-
-                seam[y] = minIdx;
-            }
-
-            // Color the seams red and update the energy map
-            for (unsigned int y = 0; y < sourceImage.getHeight(); ++y)
-            {
-                unsigned int x = seam[y] % sourceImage.getWidth();
-                RGBPixelBuf redPixel = {255, 0, 0, 0};
-                sourceImage.setPixel(x, y, redPixel);
-                RGBPixelBuf highEnergyPixel = {QuantumRange, QuantumRange, QuantumRange, 0};
-                energyMap.setPixel(x, y, highEnergyPixel);
-            }
-        }
-    }
-
 }

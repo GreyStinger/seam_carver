@@ -39,7 +39,17 @@ namespace StronkImage
 
 		// Just color the seams red in the image
 		// WARNING: Very Very Slow, implemented for demonstration purposes only
-		static void colorSeams(ImageData &sourceImage, ImageData &energyMap, int numSeams);
+		// Need to implement it properly, tried and it went half alright, but it's late and I'll go
+		// have another look ath the dynamic programming system for it again in the future
+		// static void colorSeams(ImageData &sourceImage, ImageData &energyMap, int numSeams);
+
+
+		// Experimental:
+		// Takes newly filtered image and original un-seamCut image and fills in a new image,
+		// replacing the cut pixels with red pixels and rebuilding the original image but now
+		// the seams that were cut will be replaced with red.
+		// Same as above function implementation
+		// static void reAddSeams(ImageData &newSeamCutImage, ImageData &OrigImage);
 	};
 }
 
