@@ -36,6 +36,10 @@ namespace StronkImage
 		// provided as required using a minimum cost matrix generated
 		// with the energy map provided to find the minimum cost seam.
 		static void removeSeams(ImageData &sourceImage, ImageData &energyMap, int numSeams);
+
+		// Just color the seams red in the image
+		// WARNING: Very Very Slow, implemented for demonstration purposes only
+		static void colorSeams(ImageData &sourceImage, ImageData &energyMap, int numSeams);
 	};
 }
 

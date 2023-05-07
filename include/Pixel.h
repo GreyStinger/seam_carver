@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#define QuantumRange 255
+
 namespace StronkImage
 {
 	// Define Quantum for readability
