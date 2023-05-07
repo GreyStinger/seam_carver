@@ -8,7 +8,7 @@ project(seamcarver)
 set(CMAKE_CXX_STANDARD 11)
 
 # Set the build type to Debug to include debugging symbols
-set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE Debug)
 
 # Find the libpng, libjpeg, and Google Test libraries
 find_package(PNG REQUIRED)

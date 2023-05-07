@@ -1,6 +1,7 @@
 #include <cmath>
 #include <vector>
-#include <iostream>
+#include <limits>
+#include <algorithm>
 
 #include <Filter.h>
 
@@ -115,47 +116,77 @@ namespace StronkImage
     {
         for (int seamCount = 0; seamCount < numSeams; ++seamCount)
         {
-            std::vector<int> seam(sourceImage.getHeight());
+            // Step 2: Initialize a minimum path energy 2D array
+            ImageData minPathEnergy(sourceImage.getWidth(), sourceImage.getHeight());
 
-            for (unsigned int y = 0; y < sourceImage.getHeight(); ++y)
+            // Step 3: Iterate through each pixel in the energy map
+            for (unsigned int y = 1; y < sourceImage.getHeight() - 1; ++y)
             {
-                for (unsigned int x = 0; x < sourceImage.getWidth(); ++x)
+                for (unsigned int x = 1; x < sourceImage.getWidth() - 1; ++x)
                 {
-                    if (y == 0)
+                    int currentEnergy = energyMap.getPixel(x, y).red;
+                    int minEnergy = minPathEnergy.getPixel(x, y - 1).red;
+
+                    if (x > 1)
                     {
-                        seam[y] = x;
+                        int leftEnergy = minPathEnergy.getPixel(x - 1, y - 1).red;
+                        minEnergy = std::min(minEnergy, leftEnergy);
                     }
-                    else
+
+                    if (x < sourceImage.getWidth() - 2)
                     {
-                        int minIdx = seam[y - 1];
-                        int minEnergy = energyMap.getPixel(minIdx % sourceImage.getWidth(), y - 1).red;
+                        int rightEnergy = minPathEnergy.getPixel(x + 1, y - 1).red;
+                        minEnergy = std::min(minEnergy, rightEnergy);
+                    }
 
-                        if (x > 0)
-                        {
-                            int leftEnergy = energyMap.getPixel(x - 1, y - 1).red;
-                            if (leftEnergy < minEnergy)
-                            {
-                                minEnergy = leftEnergy;
-                                minIdx = seam[y - 1] - 1;
-                            }
-                        }
+                    minPathEnergy.setPixel(x, y, RGBPixelBuf{(unsigned int)currentEnergy + minEnergy, 0, 0, 0});
+                }
+            }
 
-                        if (x < sourceImage.getWidth() - 1)
-                        {
-                            int rightEnergy = energyMap.getPixel(x + 1, y - 1).red;
-                            if (rightEnergy < minEnergy)
-                            {
-                                minIdx = seam[y - 1] + 1;
-                            }
-                        }
+            // Step 4: Find the pixel with the minimum energy value in the bottom row
+            int minIdx = 1;
+            int minEnergy = minPathEnergy.getPixel(1, sourceImage.getHeight() - 2).red;
+            for (unsigned int x = 2; x < sourceImage.getWidth() - 1; ++x)
+            {
+                int currentEnergy = minPathEnergy.getPixel(x, sourceImage.getHeight() - 2).red;
+                if (currentEnergy < minEnergy)
+                {
+                    minEnergy = currentEnergy;
+                    minIdx = x;
+                }
+            }
 
-                        seam[y] = minIdx + (x - minIdx % sourceImage.getWidth());
+            // Step 5: Trace back the lowest energy seam
+            std::vector<int> seam(sourceImage.getHeight());
+            seam[sourceImage.getHeight() - 1] = minIdx;
+
+            for (int y = sourceImage.getHeight() - 2; y > 0; --y)
+            {
+                int minEnergy = minPathEnergy.getPixel(seam[y + 1], y).red;
+                seam[y] = seam[y + 1];
+
+                if (seam[y + 1] > 1)
+                {
+                    int leftEnergy = minPathEnergy.getPixel(seam[y + 1] - 1, y).red;
+                    if (leftEnergy < minEnergy)
+                    {
+                        minEnergy = leftEnergy;
+                        seam[y] = seam[y + 1] - 1;
+                    }
+                }
+
+                if (seam[y + 1] < sourceImage.getWidth() - 2)
+                {
+                    int rightEnergy = minPathEnergy.getPixel(seam[y + 1] + 1, y).red;
+                    if (rightEnergy < minEnergy)
+                    {
+                        seam[y] = seam[y + 1] + 1;
                     }
                 }
             }
 
+            // Step 6: Remove the lowest energy seam from the original image
             ImageData newImage(sourceImage.getWidth() - 1, sourceImage.getHeight());
-
             for (unsigned int y = 0; y < sourceImage.getHeight(); ++y)
             {
                 for (unsigned int x = 0; x < sourceImage.getWidth(); ++x)
@@ -171,6 +202,7 @@ namespace StronkImage
                 }
             }
 
+            // Step 7: Update the source image and regenerate the energy map
             sourceImage = newImage;
             energyMap = Filter::generateEnergyMap(sourceImage);
         }
