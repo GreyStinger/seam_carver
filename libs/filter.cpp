@@ -4,7 +4,7 @@
 
 namespace StronkImage
 {
-    void Filter::ConvoluteSobelMatrix(ImageData &sourceImage, int matrix[3][3])
+    ImageData Filter::ConvoluteSobelMatrix(ImageData &sourceImage, int matrix[3][3])
     {
         // Get the dimensions of the source image
         int width = sourceImage.width;
@@ -42,10 +42,10 @@ namespace StronkImage
         }
 
         // Copy the temporary image data back into the source image
-        sourceImage = tempImage;
+        return tempImage;
     }
 
-    static void genGrayscaleData(ImageData &colourImage)
+    void Filter::genGrayscaleData(ImageData &colourImage)
     {
         for (int y = 0; y < colourImage.height; ++y)
         {
@@ -78,10 +78,12 @@ namespace StronkImage
         Filter::genGrayscaleData(grayscaleImage);
 
         // Apply Sobel filters
-        ImageData sobelXImage = grayscaleImage;
-        ImageData sobelYImage = grayscaleImage;
-        ConvoluteSobelMatrix(sobelXImage, sobelMatrixX);
-        ConvoluteSobelMatrix(sobelYImage, sobelMatrixY);
+        // ImageData sobelXImage = grayscaleImage;
+        // ImageData sobelYImage = grayscaleImage;
+        ImageData sobelXImage = ConvoluteSobelMatrix(grayscaleImage, sobelMatrixX);
+        ImageData sobelYImage = ConvoluteSobelMatrix(grayscaleImage, sobelMatrixY);
+        // ConvoluteSobelMatrix(grayscaleImage, sobelMatrixX);
+        // ConvoluteSobelMatrix(grayscaleImage, sobelMatrixY);
 
         // Calculate energy map
         ImageData energyMap(sourceImage.width, sourceImage.height);

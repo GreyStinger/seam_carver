@@ -11,7 +11,10 @@ namespace StronkImage
 {
 	class ImageData
 	{
+	private:
+
 	public:
+		// FIXME: change code to use only getters and setters
 		unsigned int width, height;
 
 		// 1D array of pixels allocated for the height * width of the image
@@ -31,7 +34,14 @@ namespace StronkImage
 		~ImageData();
 
 		// Change buffer size for new height and width
-		void resizeBuffer(unsigned int newWidth, unsigned int newHeight);
+		void resizeBuffer(int newWidth, int newHeight);
+
+        // Getters and setters for width and height
+        unsigned int getWidth() const { return width; }
+        void setWidth(unsigned int newWidth) { width = newWidth; }
+
+        unsigned int getHeight() const { return height; }
+        void setHeight(unsigned int newHeight) { height = newHeight; }
 
 		// Get pixel at (x, y) position
 		RGBPixelBuf getPixel(int x, int y) const;
@@ -66,7 +76,10 @@ namespace StronkImage
 		bool writeToFile(const std::string &imageSpec);
 
 		// Return a raw reference to the local ImageData structure
-		ImageData &getRawData();
+		ImageData &getRawImageData();
+
+		// Set the local ImageData structure with new data
+		void setRawImageData(const ImageData &newImageData);
 	};
 }
 

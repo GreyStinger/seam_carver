@@ -9,6 +9,27 @@
 // Definitions for Image
 namespace StronkImage
 {
+	// Default constructor
+	Image::Image()
+	{
+		// Initialize imageData with default values (width and height = 0)
+		imageData = ImageData();
+	}
+
+	// Create image map from file
+	Image::Image(const std::string &imageSpec)
+	{
+		// Load image from file
+		loadFromFile(imageSpec);
+	}
+
+	Image::~Image()
+	{
+		// Destructor body
+		// Since the Image class uses the ImageData class, which properly manages
+		// its resources, no additional resource cleanup is required in the destructor.
+	}
+
 	void Image::loadFromFile(const std::string &imageSpec)
 	{
 		if (imageSpec.substr(imageSpec.find_last_of(".") + 1) == "jpg" || imageSpec.substr(imageSpec.find_last_of(".") + 1) == "jpeg")
@@ -79,6 +100,40 @@ namespace StronkImage
 			unsigned int height = png_get_image_height(png_ptr, info_ptr);
 			imageData.resizeBuffer(width, height);
 
+			// Check the color type and bit depth
+			int color_type = png_get_color_type(png_ptr, info_ptr);
+			int bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+
+			// Convert palette images to RGB
+			if (color_type == PNG_COLOR_TYPE_PALETTE)
+			{
+				png_set_palette_to_rgb(png_ptr);
+			}
+
+			// Convert grayscale images to RGB
+			if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+			{
+				png_set_gray_to_rgb(png_ptr);
+			}
+
+			// Convert low bit-depth images to 8 bits
+			if (bit_depth < 8)
+			{
+				png_set_packing(png_ptr);
+			}
+
+			// Expand 8-bit images to full 16 bits
+			if (bit_depth == 16)
+			{
+				png_set_swap(png_ptr);
+			}
+
+			// Add an alpha channel if the image doesn't have one
+			if (color_type & PNG_COLOR_MASK_ALPHA == 0)
+			{
+				png_set_add_alpha(png_ptr, 0xff, PNG_FILLER_AFTER);
+			}
+
 			png_read_update_info(png_ptr, info_ptr);
 
 			png_bytepp row_pointers = (png_bytepp)png_malloc(png_ptr, height * sizeof(png_bytep));
@@ -113,7 +168,6 @@ namespace StronkImage
 			png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 			fclose(infile);
 		}
-
 		else
 		{
 			throw std::runtime_error("Unsupported file format");
@@ -238,6 +292,16 @@ namespace StronkImage
 		}
 		return true;
 	}
+
+	ImageData &Image::getRawImageData()
+	{
+		return imageData;
+	}
+
+	void Image::setRawImageData(const ImageData &newImageData)
+	{
+		imageData = newImageData;
+	}
 } // namespace StronkImage
 
 // Definitions for ImageData
@@ -272,7 +336,7 @@ namespace StronkImage
 		delete[] rgbPixelData;
 	}
 
-	void ImageData::resizeBuffer(unsigned int newWidth, unsigned int newHeight)
+	void ImageData::resizeBuffer(int newWidth, int newHeight)
 	{
 		if (newWidth <= 0 || newHeight <= 0)
 		{
@@ -289,8 +353,8 @@ namespace StronkImage
 		RGBPixelBuf *newRgbPixelData = new RGBPixelBuf[newHeight * newWidth];
 
 		// Copy the data from the old buffer to the new buffer
-		int minWidth = std::min(width, newWidth);
-		int minHeight = std::min(height, newHeight);
+		int minWidth = std::min(width, (unsigned int)newWidth);
+		int minHeight = std::min(height, (unsigned int)newHeight);
 		for (int y = 0; y < minHeight; ++y)
 		{
 			for (int x = 0; x < minWidth; ++x)
