@@ -41,6 +41,7 @@ target_link_libraries(src_objects libs_objects)
 # Add your test source files
 set(TEST_SOURCES
     tests/ImageDataTest.cpp
+    tests/FilterTest.cpp
     # Add more test files if needed
 )
 
