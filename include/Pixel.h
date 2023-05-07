@@ -19,6 +19,15 @@ namespace StronkImage
 			green, 
 			blue, 
 			opacity;
+
+		// Overload the == operator for RGBPixelBuf
+		bool operator==(const _RGBPixelBuf& other) const
+		{
+			return red == other.red
+				&& green == other.green
+				&& blue == other.blue
+				&& opacity == other.opacity;
+		}
 	} RGBPixelBuf;
 }
 
