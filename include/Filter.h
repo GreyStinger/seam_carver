@@ -31,6 +31,11 @@ namespace StronkImage
 
 		// Return energy map of an image as an ImageData structure
 		static ImageData generateEnergyMap(ImageData &sourceImage);
+
+		// Remove the desired number of seams from the source image
+		// provided as required using a minimum cost matrix generated
+		// with the energy map provided to find the minimum cost seam.
+		static ImageData removeSeams(ImageData &sourceImage, ImageData &energyMap, int numSeams);
 	};
 }
 
