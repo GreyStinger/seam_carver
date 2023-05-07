@@ -17,7 +17,7 @@ void stripImage(const std::string& inputImagePath, const std::string& outputImag
     ImageData energyMap = Filter::generateEnergyMap(grayscaleImage);
 
     // Remove the specified number of seams from the input image
-    Filter::colorSeams(inputImage.getRawImageData(), energyMap, numSeams);
+    Filter::removeSeams(inputImage.getRawImageData(), energyMap, numSeams);
 
     // Save the modified image to the output path
     inputImage.writeToFile(outputImagePath);
