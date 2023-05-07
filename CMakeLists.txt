@@ -53,3 +53,18 @@ target_link_libraries(seamcarver_tests GTest::GTest GTest::Main ${PNG_LIBRARIES}
 # Enable testing and add your test executable as a test
 enable_testing()
 add_test(NAME seamcarver_tests COMMAND seamcarver_tests)
+
+# Installation settings
+install(TARGETS seamcarve DESTINATION bin)
+
+# Add uninstall target
+if(NOT TARGET uninstall)
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+
+  add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()
+

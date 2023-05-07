@@ -1,0 +1,24 @@
+set(INSTALL_DIR "@CMAKE_INSTALL_PREFIX@")
+set(INSTALL_BIN_DIR "${INSTALL_DIR}/bin")
+set(INSTALL_MANIFEST "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt")
+
+file(READ "${INSTALL_MANIFEST}" contents)
+string(REGEX REPLACE "\n$" "" contents "${contents}")
+string(REGEX REPLACE "\n" ";" lines "${contents}")
+
+foreach(line ${lines})
+    message(STATUS "Uninstalling: ${line}")
+    if(EXISTS "${line}")
+        execute_process(
+            COMMAND @CMAKE_COMMAND@ -E remove "${line}"
+            RESULT_VARIABLE rm_exit_code
+            OUTPUT_VARIABLE rm_output)
+        if(NOT ${rm_exit_code} EQUAL 0)
+            message(FATAL_ERROR "Problem when removing ${line}")
+        endif()
+    else()
+        message(STATUS "File not found, skipping: ${line}")
+    endif()
+endforeach()
+
+message(STATUS "Uninstall finished")
