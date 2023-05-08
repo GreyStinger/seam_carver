@@ -67,6 +67,9 @@ namespace StronkImage
 		// Create image map from file
 		Image(const std::string &imageSpec);
 
+		// Create image from ImageData
+		Image(ImageData);
+
 		// Default destructor
 		virtual ~Image();
 

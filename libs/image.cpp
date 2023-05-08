@@ -17,6 +17,10 @@ namespace StronkImage
 		loadFromFile(imageSpec);
 	}
 
+	// Create image from ImageData
+	Image::Image(ImageData inputImageData)
+		: imageData(inputImageData){};
+
 	Image::~Image()
 	{
 		// Destructor body

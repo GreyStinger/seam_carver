@@ -5,7 +5,7 @@ using namespace StronkImage;
 
 TEST(FilterRemoveSeamsTest, RemoveOneSeam)
 {
-    Image inputImage("../tests/test_images/input.jpg");
+    Image inputImage("../input.jpg");
     ImageData sourceImage = inputImage.getRawImageData();
     ImageData grayscaleImage = sourceImage;
     Filter::genGrayscaleData(grayscaleImage);
@@ -25,7 +25,7 @@ TEST(FilterRemoveSeamsTest, RemoveOneSeam)
 
 TEST(FilterRemoveSeamsTest, RemoveMultipleSeams)
 {
-    Image inputImage("../tests/test_images/input.jpg");
+    Image inputImage("../input.jpg");
     ImageData sourceImage = inputImage.getRawImageData();
     ImageData grayscaleImage = sourceImage;
     Filter::genGrayscaleData(grayscaleImage);
@@ -46,7 +46,7 @@ TEST(FilterRemoveSeamsTest, RemoveMultipleSeams)
 
 TEST(FilterRemoveSeamsTest, RemoveNoSeams)
 {
-    Image inputImage("../tests/test_images/input.jpg");
+    Image inputImage("../input.jpg");
     ImageData sourceImage = inputImage.getRawImageData();
     ImageData grayscaleImage = sourceImage;
     Filter::genGrayscaleData(grayscaleImage);
