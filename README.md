@@ -74,6 +74,10 @@ For example:
 
 This will resize the image `input.jpg` by removing 100 seams and save the result to `output.jpg`.
 
+## Tests
+
+For some tests to pass in the build dir you need to have a directory called test_images. This will be created automatically with the `configure` script
+
 ## Limitations
 
 This implementation of the seam carving algorithm is single-threaded, which means that it may be slow for large images or when removing a large number of seams. If you need to process images quickly or in parallel, you may want to consider using a multi-threaded implementation or a GPU-accelerated implementation of the algorithm.
@@ -81,7 +85,3 @@ This implementation of the seam carving algorithm is single-threaded, which mean
 ## Credits
 
 This implementation of the seam carving algorithm is based on the original paper by Shai Avidan and Ariel Shamir - though it only does vertical seamcarving so far -, "Seam Carving for Content-Aware Image Resizing", which can be found here: <https://perso.crans.org/frenoy/matlab2012/seamcarving.pdf>.
-
-## Todo
-
-Add gaussian blur filter

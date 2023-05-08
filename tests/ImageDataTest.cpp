@@ -43,21 +43,21 @@ TEST(ImageDataTest, ResizeBufferInvalidDimensions) {
     EXPECT_THROW(imageData.resizeBuffer(10, 0), std::invalid_argument);
 }
 
-// // Test ImageData copy constructor
-// TEST(ImageDataTest, CopyConstructor) {
-//     ImageData imageData1(5, 5);
-//     RGBPixelBuf pixel = { 100, 150, 200, 255 };
-//     imageData1.setPixel(1, 1, pixel);
-//     ImageData imageData2(imageData1);
-//     EXPECT_EQ(5, imageData2.getWidth());
-//     EXPECT_EQ(5, imageData2.getHeight());
-//     EXPECT_EQ(pixel, imageData2.getPixel(1, 1));
-// }
+// Test ImageData copy constructor
+TEST(ImageDataTest, CopyConstructor) {
+    ImageData imageData1(5, 5);
+    RGBPixelBuf pixel = { 100, 150, 200, 255 };
+    imageData1.setPixel(1, 1, pixel);
+    ImageData imageData2(imageData1);
+    EXPECT_EQ(5, imageData2.getWidth());
+    EXPECT_EQ(5, imageData2.getHeight());
+    EXPECT_EQ(pixel, imageData2.getPixel(1, 1));
+}
 
-// // Test getPixel and setPixel with valid positions
-// TEST(ImageDataTest, GetSetPixelValidPositions) {
-//     ImageData imageData(5, 5);
-//     RGBPixelBuf pixel = { 100, 150, 200, 255 };
-//     imageData.setPixel(1, 1, pixel);
-//     EXPECT_EQ(pixel, imageData.getPixel(1, 1));
-// }
+// Test getPixel and setPixel with valid positions
+TEST(ImageDataTest, GetSetPixelValidPositions) {
+    ImageData imageData(5, 5);
+    RGBPixelBuf pixel = { 100, 150, 200, 255 };
+    imageData.setPixel(1, 1, pixel);
+    EXPECT_EQ(pixel, imageData.getPixel(1, 1));
+}

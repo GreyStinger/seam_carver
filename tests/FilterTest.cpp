@@ -1,10 +1,20 @@
 #include <StronkImage.h>
 #include <gtest/gtest.h>
+#include <unistd.h>
+
+#define PATH_MAX 2048
 
 using namespace StronkImage;
 
 TEST(FilterRemoveSeamsTest, RemoveOneSeam)
 {
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
+        std::cout << "Current working directory: " << cwd << std::endl;
+    } else {
+        std::cerr << "Error: could not get current working directory\n";
+    }
+
     Image inputImage("../input.jpg");
     ImageData sourceImage = inputImage.getRawImageData();
     ImageData grayscaleImage = sourceImage;
@@ -25,7 +35,14 @@ TEST(FilterRemoveSeamsTest, RemoveOneSeam)
 
 TEST(FilterRemoveSeamsTest, RemoveMultipleSeams)
 {
-    Image inputImage("../input.jpg");
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
+        std::cout << "Current working directory: " << cwd << std::endl;
+    } else {
+        std::cerr << "Error: could not get current working directory\n";
+    }
+
+    Image inputImage("../image.jpg");
     ImageData sourceImage = inputImage.getRawImageData();
     ImageData grayscaleImage = sourceImage;
     Filter::genGrayscaleData(grayscaleImage);
@@ -46,6 +63,13 @@ TEST(FilterRemoveSeamsTest, RemoveMultipleSeams)
 
 TEST(FilterRemoveSeamsTest, RemoveNoSeams)
 {
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
+        std::cout << "Current working directory: " << cwd << std::endl;
+    } else {
+        std::cerr << "Error: could not get current working directory\n";
+    }
+
     Image inputImage("../input.jpg");
     ImageData sourceImage = inputImage.getRawImageData();
     ImageData grayscaleImage = sourceImage;
