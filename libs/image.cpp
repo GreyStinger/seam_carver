@@ -78,6 +78,18 @@ namespace StronkImage
 		rgbPixelData = new RGBPixelBuf[height * width];
 	}
 
+	ImageData::ImageData(int width, int height, const RGBPixelBuf &pixel)
+		: width(width), height(height)
+	{
+		rgbPixelData = new RGBPixelBuf[width * height];
+
+		// Initialize all pixels with the provided pixel value
+		for (int i = 0; i < width * height; ++i)
+		{
+			rgbPixelData[i] = pixel;
+		}
+	}
+
 	ImageData::ImageData(const ImageData &other)
 		: height(other.height), width(other.width), rgbPixelData(nullptr)
 	{

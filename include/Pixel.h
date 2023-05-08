@@ -14,19 +14,25 @@ namespace StronkImage
 	// Define colour pixel data
 	typedef struct _RGBPixelBuf
 	{
-		Quantum 
-			red, 
-			green, 
-			blue, 
+		Quantum
+			red,
+			green,
+			blue,
 			opacity;
 
 		// Overload the == operator for RGBPixelBuf
-		bool operator==(const _RGBPixelBuf& other) const
+		bool operator==(const _RGBPixelBuf &other) const
 		{
-			return red == other.red
-				&& green == other.green
-				&& blue == other.blue
+			return red == other.red 
+				&& green == other.green 
+				&& blue == other.blue 
 				&& opacity == other.opacity;
+		}
+
+		// Overload the != operator for RGBPixelBuf
+		bool operator!=(const _RGBPixelBuf &other) const
+		{
+			return !(*this == other);
 		}
 	} RGBPixelBuf;
 }

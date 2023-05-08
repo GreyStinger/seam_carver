@@ -94,9 +94,9 @@ namespace StronkImage
         ImageData tempImage(width, height);
 
         // Iterate through each pixel in the source image
-        for (int y = 1; y < height - 1; ++y)
+        for (int y = 0; y < height; ++y)
         {
-            for (int x = 1; x < width - 1; ++x)
+            for (int x = 0; x < width; ++x)
             {
                 int sum = 0;
 
@@ -105,8 +105,8 @@ namespace StronkImage
                 {
                     for (int i = -1; i <= 1; ++i)
                     {
-                        int neighborX = x + i;
-                        int neighborY = y + j;
+                        int neighborX = std::clamp(x + i, 0, width - 1);
+                        int neighborY = std::clamp(y + j, 0, height - 1);
 
                         // Accumulate the sum of the matrix convolution
                         sum += sourceImage.getPixel(neighborX, neighborY).red * matrix[j + 1][i + 1];

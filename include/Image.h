@@ -12,7 +12,6 @@ namespace StronkImage
 	class ImageData
 	{
 	private:
-
 	public:
 		// FIXME: change code to use only getters and setters
 		unsigned int width, height;
@@ -27,6 +26,9 @@ namespace StronkImage
 		// Allocate image with given height and width
 		ImageData(int width, int height);
 
+		// Allocate image of given size with duplicated pixel
+		ImageData(int width, int height, const RGBPixelBuf &pixel);
+
 		// Copy constructor
 		ImageData(const ImageData &other);
 
@@ -39,10 +41,10 @@ namespace StronkImage
 		// Change buffer size for new height and width and set new height and width
 		void resizeBuffer(int newWidth, int newHeight);
 
-        // Getters and setters for width and height
-        unsigned int getWidth() const { return width; }
+		// Getters and setters for width and height
+		unsigned int getWidth() const { return width; }
 
-        unsigned int getHeight() const { return height; }
+		unsigned int getHeight() const { return height; }
 
 		// Get pixel at (x, y) position
 		RGBPixelBuf getPixel(int x, int y) const;
