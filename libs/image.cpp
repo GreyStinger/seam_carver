@@ -50,8 +50,6 @@ namespace StronkImage
 		return *this;
 	}
 
-
-
 	ImageData &Image::getRawImageData()
 	{
 		return imageData;
