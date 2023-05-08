@@ -2,6 +2,8 @@
 #ifndef STRONKIMAGE_FILTER
 #define STRONKIMAGE_FILTER
 
+#include <vector>
+
 #include <Image.h>
 
 namespace StronkImage
@@ -17,6 +19,9 @@ namespace StronkImage
 		{-1, -2, -1},
 		{0, 0, 0},
 		{1, 2, 1}};
+
+	
+    std::vector<std::vector<float>> generateGaussianKernel(int kernelSize, float sigma);
 
 	/**
 	 * @brief The Filter class provides various image filtering operations.

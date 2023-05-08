@@ -38,6 +38,11 @@ namespace StronkImage
 
     void Filter::gaussianBlur(ImageData &sourceImage, float sigmaValue)
     {
+        if (sigmaValue == 0.0f)
+        {
+            return; // Skip the processing if sigma value is 0.0
+        }
+
         // Generate the Gaussian kernel
         int kernelSize = static_cast<int>(std::ceil(6 * sigmaValue)) | 1; // Ensure odd kernel size
         std::vector<std::vector<float>> kernel = generateGaussianKernel(kernelSize, sigmaValue);
