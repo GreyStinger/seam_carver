@@ -7,6 +7,78 @@
 
 namespace StronkImage
 {
+    // Helper function to generate a Gaussian kernel
+    std::vector<std::vector<float>> generateGaussianKernel(int kernelSize, float sigma)
+    {
+        std::vector<std::vector<float>> kernel(kernelSize, std::vector<float>(kernelSize));
+        float sum = 0.0f;
+        int center = kernelSize / 2;
+
+        for (int y = 0; y < kernelSize; ++y)
+        {
+            for (int x = 0; x < kernelSize; ++x)
+            {
+                float exponent = -((x - center) * (x - center) + (y - center) * (y - center)) / (2 * sigma * sigma);
+                kernel[y][x] = std::exp(exponent) / (2 * M_PI * sigma * sigma);
+                sum += kernel[y][x];
+            }
+        }
+
+        // Normalize the kernel
+        for (int y = 0; y < kernelSize; ++y)
+        {
+            for (int x = 0; x < kernelSize; ++x)
+            {
+                kernel[y][x] /= sum;
+            }
+        }
+
+        return kernel;
+    }
+
+    void Filter::gaussianBlur(ImageData &sourceImage, float sigmaValue)
+    {
+        // Generate the Gaussian kernel
+        int kernelSize = static_cast<int>(std::ceil(6 * sigmaValue)) | 1; // Ensure odd kernel size
+        std::vector<std::vector<float>> kernel = generateGaussianKernel(kernelSize, sigmaValue);
+
+        // Create a temporary image to store the convoluted data
+        ImageData tempImage(sourceImage.getWidth(), sourceImage.getHeight());
+
+        // Iterate through each pixel in the source image
+        int center = kernelSize / 2;
+        for (int y = 0; y < sourceImage.getHeight(); ++y)
+        {
+            for (int x = 0; x < sourceImage.getWidth(); ++x)
+            {
+                float sumRed = 0.0f, sumGreen = 0.0f, sumBlue = 0.0f;
+
+                // Apply the convolution
+                for (int j = -center; j <= center; ++j)
+                {
+                    for (int i = -center; i <= center; ++i)
+                    {
+                        int neighborX = std::clamp(x + i, 0, static_cast<int>(sourceImage.getWidth()) - 1);
+                        int neighborY = std::clamp(y + j, 0, static_cast<int>(sourceImage.getHeight()) - 1);
+
+                        // Accumulate the sum of the convolution
+                        RGBPixelBuf pixel = sourceImage.getPixel(neighborX, neighborY);
+                        float kernelValue = kernel[j + center][i + center];
+                        sumRed += pixel.red * kernelValue;
+                        sumGreen += pixel.green * kernelValue;
+                        sumBlue += pixel.blue * kernelValue;
+                    }
+                }
+
+                // Set the pixel value in the temporary image
+                tempImage.setPixel(x, y, {static_cast<Quantum>(sumRed), static_cast<Quantum>(sumGreen), static_cast<Quantum>(sumBlue), 255});
+            }
+        }
+
+        // Copy the temporary image data back into the source image
+        sourceImage = tempImage;
+    }
+
     ImageData Filter::ConvoluteSobelMatrix(ImageData &sourceImage, int matrix[3][3])
     {
         // Get the dimensions of the source image
@@ -81,12 +153,8 @@ namespace StronkImage
         Filter::genGrayscaleData(grayscaleImage);
 
         // Apply Sobel filters
-        // ImageData sobelXImage = grayscaleImage;
-        // ImageData sobelYImage = grayscaleImage;
         ImageData sobelXImage = ConvoluteSobelMatrix(grayscaleImage, sobelMatrixX);
         ImageData sobelYImage = ConvoluteSobelMatrix(grayscaleImage, sobelMatrixY);
-        // ConvoluteSobelMatrix(grayscaleImage, sobelMatrixX);
-        // ConvoluteSobelMatrix(grayscaleImage, sobelMatrixY);
 
         // Calculate energy map
         ImageData energyMap(sourceImage.width, sourceImage.height);
