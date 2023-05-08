@@ -1,7 +1,3 @@
-#include <cmath>
-#include <cstdio>
-
-
 #include <Image.h>
 
 // Definitions for Image
