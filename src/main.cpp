@@ -8,19 +8,20 @@ void stripImage(const std::string& inputImagePath, const std::string& outputImag
 {
     // Load the input image
     Image inputImage(inputImagePath);
+    Image transposeImage(inputImage);
+    
+    Filter::gaussianBlur(transposeImage.getRawImageData());
 
     // Generate a grayscale version of the image
-    ImageData grayscaleImage = inputImage.getRawImageData();
-    Filter::genGrayscaleData(grayscaleImage);
+    // ImageData grayscaleImage = inputImage.getRawImageData();
+    Filter::genGrayscaleData(transposeImage.getRawImageData());
 
     // Generate an energy map of the grayscale image
-    ImageData energyMap = Filter::generateEnergyMap(grayscaleImage);
-    Image energyMapImage = Image();
-    energyMapImage.setRawImageData(energyMap);
-    energyMapImage.writeToFile("energyMap.jpg");
+    transposeImage.setRawImageData(Filter::generateEnergyMap(transposeImage.getRawImageData()));
+    transposeImage.writeToFile("energyMap.jpg");
 
     // Remove the specified number of seams from the input image
-    Filter::removeSeams(inputImage.getRawImageData(), energyMap, numSeams);
+    Filter::removeSeams(inputImage.getRawImageData(), transposeImage.getRawImageData(), numSeams);
 
     // Save the modified image to the output path
     inputImage.writeToFile(outputImagePath);
