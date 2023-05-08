@@ -3,10 +3,6 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/usr/include/ImageMagick-6",
-                "/usr/include/x86_64-linux-gnu/ImageMagick-6",
-                "${workspaceFolder}/include",
                 "${workspaceFolder}/include"
             ],
             "defines": [],
