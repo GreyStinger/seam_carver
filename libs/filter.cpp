@@ -185,8 +185,8 @@ namespace StronkImage
                 }
             }
 
-            // Step 6: Remove the lowest energy seam from the original image
             ImageData newImage(sourceImage.getWidth() - 1, sourceImage.getHeight());
+            ImageData newEnergyMap(energyMap.getWidth() - 1, energyMap.getHeight());
             for (unsigned int y = 0; y < sourceImage.getHeight(); ++y)
             {
                 for (unsigned int x = 0; x < sourceImage.getWidth(); ++x)
@@ -194,17 +194,19 @@ namespace StronkImage
                     if (x < static_cast<unsigned int>(seam[y]))
                     {
                         newImage.setPixel(x, y, sourceImage.getPixel(x, y));
+                        newEnergyMap.setPixel(x, y, energyMap.getPixel(x, y));
                     }
                     else if (x > static_cast<unsigned int>(seam[y]))
                     {
                         newImage.setPixel(x - 1, y, sourceImage.getPixel(x, y));
+                        newEnergyMap.setPixel(x - 1, y, energyMap.getPixel(x, y));
                     }
                 }
             }
 
             // Step 7: Update the source image and regenerate the energy map
             sourceImage = newImage;
-            energyMap = Filter::generateEnergyMap(sourceImage);
+            energyMap = newEnergyMap;
         }
     }
 }
