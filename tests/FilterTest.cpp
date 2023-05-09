@@ -243,10 +243,13 @@ TEST(FilterRemoveSeamsTest, RemoveOneSeam)
 
 TEST(FilterRemoveSeamsTest, RemoveMultipleSeams)
 {
-    Image inputImage("../image.jpg");
-    ImageData sourceImage = inputImage.getRawImageData();
-    ImageData grayscaleImage = sourceImage;
+    Image inputImage("../input.jpg");
+
+    ImageData sourceImage(inputImage.getRawImageData());
+    ImageData grayscaleImage(sourceImage);
+    
     Filter::genGrayscaleData(grayscaleImage);
+    
     ImageData energyMap = Filter::generateEnergyMap(grayscaleImage);
 
     int initialWidth = sourceImage.getWidth();
@@ -257,8 +260,7 @@ TEST(FilterRemoveSeamsTest, RemoveMultipleSeams)
     ASSERT_EQ(initialWidth - numSeamsToRemove, sourceImage.getWidth());
     ASSERT_EQ(energyMap.getWidth(), sourceImage.getWidth());
 
-    Image outputImage;
-    outputImage.setRawImageData(sourceImage);
+    Image outputImage(sourceImage);
     outputImage.writeToFile("test_images/output_remove_multiple_seams.jpg");
 }
 
