@@ -5,6 +5,8 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  release:
+    types: [created]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -18,17 +20,41 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install dependencies
-      run: sudo apt-get install libpng-dev libjpeg-dev
+      run: sudo apt-get install libpng-dev libjpeg-dev libgtest-dev
+
+    - name: Build and install Google Test
+      run: |
+        cd /usr/src/gtest
+        sudo cmake -DCMAKE_INSTALL_PREFIX=/usr/local/gtest
+        sudo make
+        sudo make install
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DGTEST_ROOT=/usr/local/gtest
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-      
+
     - name: Create test_images folder
       run: mkdir -p ${{github.workspace}}/build/test_images
-    
+
     - name: Test
       working-directory: ${{github.workspace}}/build
       run: ctest -C ${{env.BUILD_TYPE}}
+
+    - name: Package build artifacts
+      if: github.event_name == 'release'
+      run: |
+        mkdir -p ${{github.workspace}}/artifacts
+        tar -czvf ${{github.workspace}}/artifacts/seamcarver.tar.gz -C ${{github.workspace}}/build seamcarve
+
+    - name: Upload build artifacts to release
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ${{ github.workspace }}/artifacts/seamcarver.tar.gz
+        asset_name: seamcarver.tar.gz
+        asset_content_type: application/gzip
